@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validFormatEmail= /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/; 
-const validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/; //Huit caractères au minimum, au moins une lettre majuscule//
+// const validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/; //Huit caractères au minimum, au moins une lettre majuscule//
 
 
 const User = require('../models/User');
@@ -12,9 +12,6 @@ exports.signup = (req, res, next) => {
         res.status(400).json({ error : "L'adresse e-mail doit être indiquée dans un format approprié"});
         console.log("L'adresse e-mail doit être indiquée dans un format approprié")
 
-    }else if (!validPassword.test(req.body.password)){
-        res.status(400).json({ error : "le mot de passe n'est pas assez fort"});
-        console.log("le mot de passe n'est pas assez fort")
     }else{
         bcrypt.hash(req.body.password, 10)
         .then(hash => {
