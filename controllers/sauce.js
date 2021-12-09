@@ -114,7 +114,7 @@ exports.likeSauce = ((req, res, next) => {
       .then(sauce => {
 
           if(choice == 1 && !sauce.usersLiked.includes(userId)){
-            Sauce.updateOne({_id: req.params.id} , { $inc : {likes: +1}, $push : {usersLiked: userId } })
+            Sauce.updateOne({_id: req.params.id} , { $inc : {likes: +1}, $push: {usersLiked: userId } })
               .then(() => res.status(200).json({ message: 'Article aimé !'}))
               .catch(error => res.status(404).json({ error }));
           }
@@ -130,18 +130,17 @@ exports.likeSauce = ((req, res, next) => {
               Sauce.updateOne({_id : req.params.id}, {
                 $inc : {likes : -1 } , $pull : { usersLiked :userId }
               })
-                .then(() => res.status(201).json({message : "j'aime a été retiré !"}))
+                .then(() => res.status(201).json({message : "userId et like supprimés!"}))
                 .catch(error => res.status(500).json({error}))
             }
             if (sauce.usersDisliked.includes(userId)){
               Sauce.updateOne({_id : req.params.id}, {
                 $inc : {dislikes : -1 } , $pull : { usersDisliked :userId }
               })
-                .then(() => res.status(201).json({message : "je n'aime pas été retiré !"}))
+                .then(() => res.status(201).json({message : "userId et dislike supprimés!"}))
                 .catch(error => res.status(500).json({ error }))
             }
           }         
       })
-      .catch(error => res.status(500).json({ error}))    
-    
+      .catch(error => res.status(500).json({ error}))        
 });
