@@ -2,7 +2,7 @@ const Sauce = require('../models/Sauce');
 const fs = require('fs');
 
 exports.createSauce = (req, res, next) => {  
-  const sauceObject = JSON.parse(req.body.sauce); 
+  const sauceObject = JSON.parse(req.body.sauce);
   delete sauceObject._id;  
   const sauce= new Sauce({
     ...sauceObject,
@@ -63,47 +63,6 @@ exports.getAllSauces =(req, res, next) => {
       .catch(error => res.status(404).json({ error }));
 };
 
-// traitement de likes//
-
-// exports.likeSauce = ((req, res, next) => {    
-  
-//     const choice = req.body.like;
-//     const userId = req.body.userId;
-    
-//     if(choice == 1){
-//       Sauce.updateOne({_id: req.params.id} , { $inc : {likes: +1}, $push : {usersLiked: userId } })
-//         .then(() => res.status(200).json({ message: 'Article aimé !'}))
-//         .catch(error => res.status(404).json({ error }));
-//     }
-//     if(choice == -1){
-//       Sauce.updateOne({_id: req.params.id} , {$inc : {dislikes: +1}, $push: {usersDisliked: userId }})
-//         .then(() => res.status(200).json({ message: 'Article pas aimé !'}))
-//         .catch(error => res.status(404).json({ error }));
-//     }
-
-//     if(choice == 0){
-//       Sauce.findOne({_id : req.params.id})
-//        .then(sauce => {
-//           if (sauce.usersLiked.includes(userId)){ 
-//             Sauce.updateOne({_id : req.params.id}, {
-//                $inc : {likes : -1 } , $pull : { usersLiked :userId }
-//             })
-//               .then(() => res.status(201).json({message : "j'aime a été retiré !"}))
-//               .catch(error => res.status(500).json({error}))
-//           }
-//           if (sauce.usersDisliked.includes(userId)){
-//             Sauce.updateOne({_id : req.params.id}, {
-//               $inc : {dislikes : -1 } , $pull : { usersDisliked :userId }
-//             })
-//               .then(() => res.status(201).json({message : "je n'aime pas été retiré !"}))
-//               .catch(error => res.status(500).json({ error }))
-//           }
-//         })
-//       .catch(error => res.status(500).json({ error}))    
-//     }
-// });
-
-
 
 exports.likeSauce = ((req, res, next) => {    
   
@@ -112,29 +71,29 @@ exports.likeSauce = ((req, res, next) => {
     
       Sauce.findOne({_id : req.params.id})
       .then(sauce => {
-
+        
           if(choice == 1 && !sauce.usersLiked.includes(userId)){
-            Sauce.updateOne({_id: req.params.id} , { $inc : {likes: +1}, $push: {usersLiked: userId } })
+            Sauce.updateOne({_id: sauce._id} , { $inc : {likes: +1}, $push: {usersLiked: userId } })
               .then(() => res.status(200).json({ message: 'Article aimé !'}))
               .catch(error => res.status(404).json({ error }));
           }
 
           if(choice == -1 && !sauce.usersDisliked.includes(userId)){
-            Sauce.updateOne({_id: req.params.id} , {$inc : {dislikes: +1}, $push: {usersDisliked: userId }})
+            Sauce.updateOne({_id: sauce._id} , {$inc : {dislikes: +1}, $push: {usersDisliked: userId }})
               .then(() => res.status(200).json({ message: 'Article pas aimé !'}))
               .catch(error => res.status(404).json({ error }));        
           }
 
           if(choice == 0){
             if (sauce.usersLiked.includes(userId)){ 
-              Sauce.updateOne({_id : req.params.id}, {
-                $inc : {likes : -1 } , $pull : { usersLiked :userId }
+              Sauce.updateOne({_id : sauce._id}, {
+                $inc : {likes : -1 } , $pull : { usersLiked :userId}
               })
                 .then(() => res.status(201).json({message : "userId et like supprimés!"}))
                 .catch(error => res.status(500).json({error}))
             }
             if (sauce.usersDisliked.includes(userId)){
-              Sauce.updateOne({_id : req.params.id}, {
+              Sauce.updateOne({_id : sauce._id}, {
                 $inc : {dislikes : -1 } , $pull : { usersDisliked :userId }
               })
                 .then(() => res.status(201).json({message : "userId et dislike supprimés!"}))
