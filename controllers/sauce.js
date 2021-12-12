@@ -15,38 +15,54 @@ exports.createSauce = (req, res, next) => {
     .catch(error => res.status(400).json({error})); 
 };
 
+
 exports.modifySauce = (req, res, next) => { 
-  const sauceObject = req.file ?
-  {
-    ...JSON.parse(req.body.sauce),
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-  } : { ...req.body };
-  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id}) //premier arg est l'objet de comparaison, le deuxième est l'objet modifié// 
-    .then(() => res.status(200).json({ message: 'Article modifié!'}))
-    .catch(error => res.status(404).json({ error }));
+  Sauce.findOne({ _id: req.params.id })
+  .then( (sauce) => {    
+    if (!sauce) {
+        res.status(404).json({
+        error: new Error("Cela n'existe pas!")
+      });
+    }
+    if (sauce.userId !== req.auth.userId) {
+        res.status(403).json({
+        error: new Error('Requête non autorisée !')
+      });
+    }else{
+      const sauceObject = req.file ?
+      {
+        ...JSON.parse(req.body.sauce),
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+      } : { ...req.body };
+      Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id}) //premier arg est l'objet de comparaison, le deuxième est l'objet modifié// 
+        .then(() => res.status(200).json({ message: 'Article modifié!'}))
+        .catch(error => res.status(404).json({ error }));     
+    }      
+  })
+  .catch(error => res.status(500).json({ error }));  
 };
 
 
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
-  .then( (sauce) => {
+    .then( (sauce) => {
       const filename = sauce.imageUrl.split('/images/')[1];
-
       if (!sauce) {
           res.status(404).json({
           error: new Error("Cela n'existe pas!")
         });
       }
       if (sauce.userId !== req.auth.userId) {
-        res.status(400).json({
+          res.status(403).json({
           error: new Error('Requête non autorisée !')
         });
-      }
-      fs.unlink(`images/${filename}`, () => {
-        Sauce.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: 'Article supprimé !'}))
-          .catch(error => res.status(400).json({ error }));
-      });
+      }else{
+        fs.unlink(`images/${filename}`, () => {
+          Sauce.deleteOne({ _id: req.params.id })
+            .then(() => res.status(200).json({ message: 'Article supprimé !'}))
+            .catch(error => res.status(400).json({ error }));
+        });
+      }      
     })
     .catch(error => res.status(500).json({ error }));      
 };
@@ -54,7 +70,7 @@ exports.deleteSauce = (req, res, next) => {
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })//je compare l'id de mon objet en vente avec l'id de ma url//
       .then(sauce=> res.status(200).json(sauce))
-      .catch(error => res.status(404).json({ error }));
+      .catch(error => res.status(404).json({ error })); //404 Not Found//
 };
 
 exports.getAllSauces =(req, res, next) => {
@@ -89,15 +105,15 @@ exports.likeSauce = ((req, res, next) => {
               Sauce.updateOne({_id : sauce._id}, {
                 $inc : {likes : -1 } , $pull : { usersLiked :userId}
               })
-                .then(() => res.status(201).json({message : "userId et like supprimés!"}))
-                .catch(error => res.status(500).json({error}))
+                .then(() => res.status(200).json({message : "userId et like supprimés!"}))
+                .catch(error => res.status(404).json({error}))
             }
             if (sauce.usersDisliked.includes(userId)){
               Sauce.updateOne({_id : sauce._id}, {
                 $inc : {dislikes : -1 } , $pull : { usersDisliked :userId }
               })
-                .then(() => res.status(201).json({message : "userId et dislike supprimés!"}))
-                .catch(error => res.status(500).json({ error }))
+                .then(() => res.status(200).json({message : "userId et dislike supprimés!"}))
+                .catch(error => res.status(404).json({ error }))
             }
           }         
       })

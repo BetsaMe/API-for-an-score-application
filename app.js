@@ -25,6 +25,7 @@ app.use(express.json()); // cette methode nous donne accès au corps de la reque
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/api/auth', userRoutes);
+
 app.use('/api/sauces', sauceRoutes);
 
 module.exports = app; // on va exporter notre fichier pour pouvoir l'utiliser sur notre serveur//
