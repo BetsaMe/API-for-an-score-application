@@ -1,5 +1,4 @@
 
-
 module.exports = (req, res, next) => {      
     try {
         const validTextSauce= /^[#.0-9a-zA-Z\s]{3,20}$/; 
@@ -7,16 +6,13 @@ module.exports = (req, res, next) => {
         const sauceObject = JSON.parse(req.body.sauce);
         
         if (!sauceObject.name || !sauceObject.description) {
-            console.log('champ vide') 
             throw 'champ vide' 
             
-        }else if(!validTextSauce.test(sauceObject.name)){
-            console.log( sauceObject.name + "n'est pas un nom valide")
-            throw 'champ non valide'
+        }else if(!validTextSauce.test(sauceObject.name) || !validTextSauce.test(sauceObject.manufacturer) || !validTextSauce.test(sauceObject.mainPepper) ){
+            throw 'les champs doivent comporter entre 3 et 20 caractères'
              
         }else if(!validDescription.test(sauceObject.description)){
-            console.log( 'description entre 3 et 200 caractères')
-            throw 'champ non valide'
+            throw 'la description doit comporter entre 3 et 250 caractères'
              
         }else {
         next();

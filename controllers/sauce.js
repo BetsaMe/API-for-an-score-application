@@ -34,6 +34,7 @@ exports.modifySauce = (req, res, next) => {
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
       } : { ...req.body };
+      
       Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id}) //premier arg est l'objet de comparaison, le deuxième est l'objet modifié// 
         .then(() => res.status(200).json({ message: 'Article modifié!'}))
         .catch(error => res.status(404).json({ error }));     
