@@ -2,9 +2,9 @@
 module.exports = (req, res, next) => {      
     try {
         const validTextSauce= /^[#.0-9a-zA-Z\s]{3,20}$/; 
-        const validDescription = /^[#.0-9a-zA-Z\s]{3,250}$/; 
-        const sauceObject = JSON.parse(req.body.sauce);
-        
+        const validDescription = /^[#.0-9a-zA-Z\s]{3,250}$/;
+        const sauceObject = typeof req.body.sauce === "string" ? JSON.parse(req.body.sauce) : req.body        
+
         if (!sauceObject.name || !sauceObject.description) {
             throw 'champ vide' 
             
@@ -18,11 +18,9 @@ module.exports = (req, res, next) => {
         next();
       }
     } catch(e) {
-        console.log(e)
         res.status(401).json({
-            message: 'Invalid request!'
+            message: e
         });
     }
   };
 
-  

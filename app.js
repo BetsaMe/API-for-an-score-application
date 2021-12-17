@@ -28,4 +28,4 @@ app.use('/api/auth', userRoutes);
 
 app.use('/api/sauces', sauceRoutes);
 
-module.exports = app; // on va exporter notre fichier pour pouvoir l'utiliser sur notre serveur//
+module.exports = app; //on va exporter notre fichier pour pouvoir l'utiliser sur notre serveur//

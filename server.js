@@ -24,12 +24,12 @@ const app= require('./app');
     }
   };
 
-  //Un serveur Node basique est démarré avec la méthode  createServer//
+  //Démarrage du serveur//
   const server = http.createServer(app); //cette fonction prend comme argument la fonction qui sera appelé à chaque requete envoyée vers le serveur//
 
   server.on('error', errorHandler);
 
-  server.listen(port, () =>{ //The method creates a listener on the specified port or path //
+  server.listen(port, () =>{ 
     
     console.log('Server is listening on port'+" "+ port)
     

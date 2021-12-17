@@ -1,9 +1,8 @@
 const multer = require('multer');
 
-
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, 'images');//Le null signifie qu'il n'y a pas eu d'erreur et que vous appelez la callback avec succès et une valeur résultante.
+    callback(null, 'images');
   },
   filename: (req, file, callback) => {
     
@@ -13,6 +12,6 @@ const storage = multer.diskStorage({
   }
 });
 
-module.exports = multer({storage: storage}).single('image');//avec .single on ajout un seul fichier//
+module.exports = multer({storage: storage}).single('image');
 
 

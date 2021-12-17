@@ -10,37 +10,23 @@ exports.createSauce = (req, res, next) => {
     likes: 0,
     dislikes: 0
   });
-  sauce.save() //enregistre le model sur ma bdd, et reenvoie une promise//
+  sauce.save() 
     .then(()=> res.status(201).json({ message: 'Article enregistré !'}))
     .catch(error => res.status(400).json({error})); 
 };
 
 
-exports.modifySauce = (req, res, next) => { 
-  Sauce.findOne({ _id: req.params.id })
-  .then( (sauce) => {    
-    if (!sauce) {
-        res.status(404).json({
-        error: new Error("Cela n'existe pas!")
-      });
-    }
-    if (sauce.userId !== req.auth.userId) {
-        res.status(403).json({
-        error: new Error('Requête non autorisée !')
-      });
-    }else{
-      const sauceObject = req.file ?
-      {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-      } : { ...req.body };
-      
-      Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id}) //premier arg est l'objet de comparaison, le deuxième est l'objet modifié// 
-        .then(() => res.status(200).json({ message: 'Article modifié!'}))
-        .catch(error => res.status(404).json({ error }));     
-    }      
-  })
-  .catch(error => res.status(500).json({ error }));  
+exports.modifySauce = (req, res, next) => {  
+  const sauceObject = req.file ?
+  {
+    ...JSON.parse(req.body.sauce),
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+  } : { ...req.body };
+  
+  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id}) 
+    .then(() => res.status(200).json({ message: 'Article modifié!'}))
+    .catch(error => res.status(404).json({ error }));     
+   
 };
 
 
@@ -69,9 +55,9 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 exports.getOneSauce = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id })//je compare l'id de mon objet en vente avec l'id de ma url//
+    Sauce.findOne({ _id: req.params.id })
       .then(sauce=> res.status(200).json(sauce))
-      .catch(error => res.status(404).json({ error })); //404 Not Found//
+      .catch(error => res.status(404).json({ error })); 
 };
 
 exports.getAllSauces =(req, res, next) => {
@@ -88,19 +74,19 @@ exports.likeSauce = ((req, res, next) => {
     
       Sauce.findOne({_id : req.params.id})
       .then(sauce => {
-        
+          //si la personne aime, et son id n'existe pas sur l'array usersLiked//
           if(choice == 1 && !sauce.usersLiked.includes(userId)){
             Sauce.updateOne({_id: sauce._id} , { $inc : {likes: +1}, $push: {usersLiked: userId } })
               .then(() => res.status(200).json({ message: 'Article aimé !'}))
               .catch(error => res.status(404).json({ error }));
           }
-
+          //si la personne n'aime pas, et son id n'existe pas sur l'array usersDisliked//
           if(choice == -1 && !sauce.usersDisliked.includes(userId)){
             Sauce.updateOne({_id: sauce._id} , {$inc : {dislikes: +1}, $push: {usersDisliked: userId }})
               .then(() => res.status(200).json({ message: 'Article pas aimé !'}))
               .catch(error => res.status(404).json({ error }));        
           }
-
+          //si la personne annule son choix précédent, et son id existe soit sur usersLiked ou usersDisliked//
           if(choice == 0){
             if (sauce.usersLiked.includes(userId)){ 
               Sauce.updateOne({_id : sauce._id}, {
